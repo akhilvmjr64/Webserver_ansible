@@ -1,0 +1,43 @@
+- hosts : localhost, docker
+  tasks :
+          - block :
+                - name : "Checking if docker is intalled"
+                  shell : docker 
+                  register : install
+                - debug :
+                        msg : "docker is not installed"
+                  when : install.rc!=0
+                  debug :
+                        msg : "docker is already installed"
+                  when : install.rc==0
+          - block :
+                - name: "Configuring yum to install docker if it is not installed"
+                  yum_repository :
+                        name : "docker"
+                        description : "docker repository"
+                        file : "docker-ce"
+                        baseurl : "https://download.docker.com/linux/centos/8/x86_64/stable/"
+                - name : "Installing docker if it is not installed"
+                  shell : "yum install docker-ce --nobest --skip-broken -y"
+            when : install.rc!=0
+          - name : "Starting docker service"
+            service :
+                    name : "docker"
+                    state : started
+          - name : "Pulling httpd image from dockerhub"
+            docker_image :
+                    name : "httpd"
+                    source : "pull"
+                    state : present
+          - name : "Starting a container with the httpd image"
+            docker_container :
+                    network_mode : "bridge"
+                    name : "webserver" 
+                    image : "httpd"
+                    exposed_ports :
+                            - "80"
+                    ports :
+                            - "8000-8100:80"
+                    state : started
+            register : dockerContainer
+          - shell : "docker cp content/* webserver:/usr/local/apache2/htdocs"
