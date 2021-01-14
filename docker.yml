@@ -40,4 +40,4 @@
                             - "8000-8100:80"
                     state : started
             register : dockerContainer
-          - shell : "docker cp content/* webserver:/usr/local/apache2/htdocs"
+          - shell : "for f in `ls content`; do docker cp content/$f webserver:/usr/local/apache2/htdocs;done;"
