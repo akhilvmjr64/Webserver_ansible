@@ -1,5 +1,6 @@
 [docker]
-#192.168.0.9 ansible_password="akhil"
-#192.168.0.12 ansible_password="akhil"
 
-#<IP-address of host/host name> ansible_password=<ssh-password for the host>
+# <IP address of the host / hostname> ansible_password="<root user's password>"
+# Examples:
+# 192.168.0.9 ansible_password="pass123"
+# 192.168.0.12 ansible_password="password"
